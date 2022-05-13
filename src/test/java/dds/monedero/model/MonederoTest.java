@@ -85,4 +85,15 @@ public class MonederoTest {
     cuenta.agregarMovimiento(new Extraccion(LocalDate.now().minusDays(1), 500));
     assertEquals(cuenta.getMontoExtraidoA(LocalDate.now().minusDays(1)), -3000);
   }
+
+  @Test
+  public void movimientosRealizadosHoy() {
+    cuenta.poner(1500);
+    cuenta.sacar(500);
+    cuenta.poner(456);
+    cuenta.sacar(250);
+    cuenta.poner(1900);
+    cuenta.sacar(1500);
+    assertEquals(cuenta.getMovimientos().size(), 6);
+  }
 }
