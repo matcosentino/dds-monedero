@@ -29,28 +29,24 @@ public class Cuenta {
   public void poner(double cuanto) {
     validarMontoPositivo(cuanto);
     validarCantidadDepositosDiarios();
-    agregarMovimiento(new Movimiento(LocalDate.now(), cuanto, true));
+    agregarMovimiento(new Deposito(LocalDate.now(), cuanto));
   }
 
   public void sacar(double cuanto) {
     validarMontoPositivo(cuanto);
     validarMontoExtraccion(cuanto);
     validarLimite(cuanto);
-    agregarMovimiento(new Movimiento(LocalDate.now(), cuanto, false));
+    agregarMovimiento(new Extraccion(LocalDate.now(), cuanto));
   }
 
   public void agregarMovimiento(Movimiento nuevoMovimiento) {
     movimientos.add(nuevoMovimiento);
-    if (nuevoMovimiento.isDeposito()) {
-      saldo += nuevoMovimiento.getMonto();
-    } else {
-      saldo -= nuevoMovimiento.getMonto();
-    }
+    saldo += nuevoMovimiento.getMonto();
   }
 
   public double getMontoExtraidoA(LocalDate fecha) {
     return getMovimientos().stream()
-        .filter(movimiento -> !movimiento.isDeposito() && movimiento.getFecha().equals(fecha))
+        .filter(movimiento -> movimiento.getMonto() < 0 && movimiento.getFecha().equals(fecha))
         .mapToDouble(Movimiento::getMonto)
         .sum();
   }
@@ -74,7 +70,7 @@ public class Cuenta {
   }
 
   private void validarCantidadDepositosDiarios() {
-    if (getMovimientos().stream().filter(movimiento -> movimiento.isDeposito()).count() >= 3) {
+    if (getMovimientos().stream().filter(movimiento -> movimiento.getMonto() > 0).count() >= 3) {
       throw new MaximaCantidadDepositosException("Ya excedio los " + 3 + " depositos diarios");
     }
   }
