@@ -29,18 +29,23 @@ public class Cuenta {
   public void poner(double cuanto) {
     validarMontoPositivo(cuanto);
     validarCantidadDepositosDiarios();
-    new Movimiento(LocalDate.now(), cuanto, true).agregateA(this);
+    agregarMovimiento(new Movimiento(LocalDate.now(), cuanto, true));
   }
 
   public void sacar(double cuanto) {
     validarMontoPositivo(cuanto);
     validarMontoExtraccion(cuanto);
     validarLimite(cuanto);
-    new Movimiento(LocalDate.now(), cuanto, false).agregateA(this);
+    agregarMovimiento(new Movimiento(LocalDate.now(), cuanto, false));
   }
 
   public void agregarMovimiento(Movimiento nuevoMovimiento) {
     movimientos.add(nuevoMovimiento);
+    if (nuevoMovimiento.isDeposito()) {
+      saldo += nuevoMovimiento.getMonto();
+    } else {
+      saldo -= nuevoMovimiento.getMonto();
+    }
   }
 
   public double getMontoExtraidoA(LocalDate fecha) {
